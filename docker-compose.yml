@@ -1,0 +1,86 @@
+version: '3.8'
+services:
+    postgres:
+        image: postgres:16-alpine
+        environment:
+            POSTGRES_DB: groceryai
+            POSTGRES_USER: laravel
+            POSTGRES_PASSWORD: secret
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - grocery-network
+
+    redis:
+        image: redis:7-alpine
+        ports:
+            - "6379:6379"
+        networks:
+            - grocery-network
+
+    laravel:
+        build: ./backend
+        ports:
+            - "8080:80"
+        depends_on:
+            - postgres
+            - redis
+        environment:
+            - DB_HOST=postgres
+            - REDIS_HOST=redis
+            - AI_SERVICE_URL=http://ai-service:8000
+        networks:
+            - grocery-network
+        volumes:
+            - ./backend:/var/www/html
+
+    ai-service:
+        build: ./ai-service
+        ports:
+            - "8000:8000"
+        environment:
+            - DB_HOST=postgres
+            - DB_USER=laravel
+            - DB_PASSWORD=secret
+            - DB_NAME=groceryai
+        depends_on:
+            - postgres
+        networks:
+            - grocery-network
+        volumes:
+            - ./ai-service:/app
+
+    n8n:
+        image: n8nio/n8n
+        ports:
+            - "5678:5678"
+        environment:
+            - N8N_BASIC_AUTH_ACTIVE=true
+            - N8N_BASIC_AUTH_USER=admin
+            - N8N_BASIC_AUTH_PASSWORD=secret
+        volumes:
+            - n8n_data:/home/node/.n8n
+        networks:
+            - grocery-network
+
+    pgadmin:
+        image: dpage/pgadmin:8
+        ports:
+            - "5050:80"
+        environment:
+            - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+            - PGADMIN_DEFAULT_PASSWORD=admin
+        depends_on:
+            - postgres
+        networks:
+            - grocery-network
+
+networks:
+    grocery-network:
+        driver: bridge
+
+volumes:
+    postgres_data:
+    n8n_data:
