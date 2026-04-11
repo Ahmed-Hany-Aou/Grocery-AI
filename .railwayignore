@@ -1,0 +1,15 @@
+# Ignore AI agent configuration folders
+.*
+!.gitignore
+
+# Ignore local dev tools
+docker-compose.yml
+Dockerfile
+docker-entrypoint.sh
+railpack.toml
+
+# Ignore build artifacts
+node_modules
+dist
+vendor
+storage
