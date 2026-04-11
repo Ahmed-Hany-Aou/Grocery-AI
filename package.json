@@ -1,0 +1,12 @@
+{
+  "name": "grocery-ai-monorepo",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "ai-service"
+  ],
+  "scripts": {
+    "start": "bash start.sh"
+  }
+}
