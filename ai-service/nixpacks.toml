@@ -1,9 +1,8 @@
-# nixpacks.toml (inside ai-service/)
 [phases.setup]
-nixPkgs = ["python311", "python311Packages.pip", "nodejs_20", "chromium", "libgbm", "libxshmfence", "libxkbcommon", "libdrm", "libxcomposite", "libxdamage", "libxrandr", "libxfixes", "libxext", "libxrender", "libx11", "libxcb", "libxau", "libxi", "libxtst", "libxss", "libxcursor", "libxscrnsaver", "libxinerama", "libxres", "libxvmc", "libxvidcore", "libxpm", "libxft", "libxfont2", "libxmu", "libxmuu", "libxpresent", "libxshmfence"]
+nixPkgs = ["python311", "nodejs"]
 
 [phases.install]
-cmds = ["pip install -r requirements.txt", "npx playwright install chromium"]
+cmds = ["pip install -r requirements.txt", "npx playwright install --with-deps chromium"]
 
 [start]
-cmd = "uvicorn main:app --host 0.0.0.0 --port 7777"
+cmd = "uvicorn main:app --host 0.0.0.0 --port $PORT"
