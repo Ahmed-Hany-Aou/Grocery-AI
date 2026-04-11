@@ -1,0 +1,5 @@
+[build]
+nixpacks_version = "1.24.0"
+
+[nodejs]
+version = "22.12.0"
