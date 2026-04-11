@@ -10,8 +10,16 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
+use App\Services\AiService;
+
 class ProductController extends Controller
 {
+    protected AiService $aiService;
+
+    public function __construct(AiService $aiService)
+    {
+        $this->aiService = $aiService;
+    }
     /**
      * Display a listing of products.
      * GET /api/v1/products
@@ -131,6 +139,88 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'data' => new ProductResource($product->load('category'))
+        ]);
+    /**
+     * Bulk update stock quantity.
+     * POST /api/v1/products/bulk-stock
+     */
+    public function bulkStockUpdate(Request $request): JsonResponse
+    {
+        $request->validate([
+            'updates' => 'required|array',
+            'updates.*.id' => 'required|exists:products,id',
+            'updates.*.quantity' => 'required|integer',
+            'updates.*.mode' => 'required|in:add,set',
+        ]);
+
+        foreach ($request->updates as $update) {
+            $product = Product::find($update['id']);
+            if ($update['mode'] === 'add') {
+                $product->increment('stock_quantity', $update['quantity']);
+            } else {
+                $product->update(['stock_quantity' => $update['quantity']]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Stock updated successfully'
+        ]);
+    }
+
+    /**
+     * Process an image from Mohammed's camera to identify products or add stock.
+     * POST /api/v1/products/process-image
+     */
+    public function processImage(Request $request): JsonResponse
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            'command' => 'nullable|string'
+        ]);
+
+        $result = $this->aiService::extractFromImage($request->file('image'), $request->command);
+
+        if (!$result['success']) {
+            return response()->json($result, 500);
+        }
+
+        $aiData = $result['data'];
+        $foundProducts = [];
+
+        foreach ($aiData['products'] as $item) {
+            // Find existing product by name or barcode
+            $product = Product::where('name', 'ilike', '%' . $item['name'] . '%')
+                ->orWhere('name_ar', 'ilike', '%' . ($item['name_ar'] ?? '') . '%')
+                ->first();
+
+            if ($product) {
+                $foundProducts[] = [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'name_ar' => $product->name_ar,
+                    'current_stock' => $product->stock_quantity,
+                    'ai_quantity' => $item['quantity'],
+                    'ai_unit_price' => $item['unit_price'],
+                    'exists' => true
+                ];
+            } else {
+                $foundProducts[] = [
+                    'id' => null,
+                    'name' => $item['name'],
+                    'name_ar' => $item['name_ar'] ?? '',
+                    'current_stock' => 0,
+                    'ai_quantity' => $item['quantity'],
+                    'ai_unit_price' => $item['unit_price'],
+                    'exists' => false
+                ];
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'type' => $aiData['type'],
+            'products' => $foundProducts
         ]);
     }
 }

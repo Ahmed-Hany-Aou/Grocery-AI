@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+vendor/
+.venv/
+__pycache__/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDEs & Tools
+.agents/
+.augment/
+.bob/
+.claude/
+.codebuddy/
+.commandcode/
+.continue/
+.cortex/
+.crush/
+.factory/
+.goose/
+.iflow/
+.junie/
+.kilocode/
+.kiro/
+.kode/
+.mcpjam/
+.mux/
+.neovate/
+.openhands/
+.pi/
+.pochi/
+.qoder/
+.qwen/
+.roo/
+.trae/
+.vibe/
+.windsurf/
+.zencoder/
+.adal/
+
+# Build outputs
+/dist
+/build
+/out
+.next/
+
+# Project Specific
+test/
+_bmad/
+_bmad-output/
+skills/
+skills-lock.json
+
+# OS files
+.DS_Store
+Thumbs.db

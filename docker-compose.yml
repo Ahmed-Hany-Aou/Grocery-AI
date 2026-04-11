@@ -30,7 +30,7 @@ services:
         environment:
             - DB_HOST=postgres
             - REDIS_HOST=redis
-            - AI_SERVICE_URL=http://ai-service:8000
+            - AI_SERVICE_URL=http://ai-service:7777
         networks:
             - grocery-network
         volumes:
@@ -39,8 +39,9 @@ services:
     ai-service:
         build: ./ai-service
         ports:
-            - "8000:8000"
+            - "7777:7777"
         environment:
+            - API_SECRET_KEY=change-secret-key-2026
             - DB_HOST=postgres
             - DB_USER=laravel
             - DB_PASSWORD=secret
@@ -51,6 +52,19 @@ services:
             - grocery-network
         volumes:
             - ./ai-service:/app
+
+    frontend:
+        build: ./frontend
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./frontend:/app
+            - /app/node_modules
+        depends_on:
+            - laravel
+            - ai-service
+        networks:
+            - grocery-network
 
     n8n:
         image: n8nio/n8n
