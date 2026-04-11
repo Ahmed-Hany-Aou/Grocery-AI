@@ -6,6 +6,9 @@
     "backend",
     "ai-service"
   ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "start": "bash start.sh"
   }
