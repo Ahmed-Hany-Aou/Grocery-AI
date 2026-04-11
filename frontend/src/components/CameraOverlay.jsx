@@ -1,8 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Camera, RefreshCw } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const CameraOverlay = ({ onCapture, onClose }) => {
+  const { t, dir } = useLanguage();
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [stream, setStream] = useState(null);
@@ -25,7 +27,7 @@ const CameraOverlay = ({ onCapture, onClose }) => {
       }
     } catch (err) {
       console.error("Camera error:", err);
-      alert("Please allow camera access");
+      alert(t('allow_camera'));
       onClose();
     }
   };
@@ -51,7 +53,7 @@ const CameraOverlay = ({ onCapture, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col">
+    <div className={`fixed inset-0 z-50 bg-black flex flex-col`} dir={dir}>
       {/* Viewport */}
       <video 
         ref={videoRef} 
@@ -67,7 +69,7 @@ const CameraOverlay = ({ onCapture, onClose }) => {
           <X size={32} />
         </button>
         <div className="text-white font-bold bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/30">
-          محمد يراقب البضاعة...
+          {t('camera_status')}
         </div>
       </div>
 
@@ -81,7 +83,7 @@ const CameraOverlay = ({ onCapture, onClose }) => {
               className="flex flex-col items-center gap-4 text-white"
             >
               <RefreshCw className="animate-spin" size={48} />
-              <span className="text-xl font-bold">جاري التحليل بالذكاء الاصطناعي...</span>
+              <span className="text-xl font-bold">{t('ai_analyzing')}</span>
             </motion.div>
           ) : (
             <motion.button

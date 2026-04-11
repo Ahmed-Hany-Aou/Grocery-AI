@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Fingerprint, Delete, Languages, CheckCircle2 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 const LoginPage = ({ onLogin }) => {
+  const { isArabic, setIsArabic, t } = useLanguage();
   const [pin, setPin] = useState('');
-  const [isArabic, setIsArabic] = useState(true);
   const [error, setError] = useState(false);
 
   const handleNumberClick = (num) => {
@@ -30,25 +31,8 @@ const LoginPage = ({ onLogin }) => {
     }
   }, [pin, onLogin]);
 
-  const t = {
-    ar: {
-      welcome: "أهلاً بك يا محمد",
-      instruction: "أدخل رقمك السري للمتابعة",
-      error: "رقم سري غير صحيح",
-      lang: "English"
-    },
-    en: {
-      welcome: "Welcome, Mohammed",
-      instruction: "Enter your PIN to continue",
-      error: "Incorrect PIN",
-      lang: "عربي"
-    }
-  };
-
-  const currentT = isArabic ? t.ar : t.en;
-
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-between p-8 bg-brand-light pb-12 ${isArabic ? 'font-arabic' : 'font-sans'}`} dir={isArabic ? 'rtl' : 'ltr'}>
+    <div className={`min-h-screen flex flex-col items-center justify-between p-8 bg-brand-light pb-12 transition-all duration-300`} dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="text-center mt-12">
         <motion.h1 
@@ -56,9 +40,9 @@ const LoginPage = ({ onLogin }) => {
           animate={{ opacity: 1, y: 0 }}
           className="text-4xl font-bold text-brand-dark mb-2"
         >
-          {currentT.welcome}
+          {t('welcome')}
         </motion.h1>
-        <p className="text-gray-500 text-lg">{currentT.instruction}</p>
+        <p className="text-gray-500 text-lg">{t('instruction')}</p>
       </div>
 
       {/* PIN Indicators */}
@@ -109,7 +93,7 @@ const LoginPage = ({ onLogin }) => {
         className="flex items-center gap-2 text-gray-500 font-medium py-3 px-6 rounded-full border border-gray-200 hover:bg-white transition-colors"
       >
         <Languages size={20} />
-        {currentT.lang}
+        {t('lang_toggle')}
       </button>
 
       {/* Error Message */}
@@ -121,7 +105,7 @@ const LoginPage = ({ onLogin }) => {
             exit={{ opacity: 0 }}
             className="fixed bottom-32 bg-red-500 text-white px-6 py-3 rounded-2xl shadow-lg"
           >
-            {currentT.error}
+            {t('error_pin')}
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,46 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, PackagePlus, ShoppingBag, Settings, LogOut, History, Check, ShieldAlert } from 'lucide-react';
+import { Camera, PackagePlus, ShoppingBag, Settings, LogOut, History, Check, ShieldAlert, X } from 'lucide-react';
 import CameraOverlay from '../components/CameraOverlay';
 import { visionService, apiService } from '../services/api';
 import { QRCodeSVG } from 'qrcode.react';
+import { useLanguage } from '../context/LanguageContext';
 
 const Dashboard = ({ onLogout }) => {
+  const { isArabic, t, formatPrice, dir } = useLanguage();
   const [showCamera, setShowCamera] = useState(false);
   const [activeMode, setActiveMode] = useState(null); // 'checkout' or 'stock'
   const [aiResult, setAiResult] = useState(null);
   const [showInvoice, setShowInvoice] = useState(false);
-  
-  const isArabic = true;
 
   const cards = [
     {
       id: 'checkout',
-      title: isArabic ? "عملية بيع" : "Checkout",
-      subtitle: isArabic ? "تصوير المشتريات والبيع" : "Scan items & sell",
+      title: t('sale_mode'),
+      subtitle: t('sale_desc'),
       icon: <ShoppingBag size={48} />,
       color: "bg-brand-primary",
-      textColor: "text-white",
-      primary: true
+      textColor: "text-white"
     },
     {
       id: 'stock',
-      title: isArabic ? "إضافة مخزون" : "Add Stock",
-      subtitle: isArabic ? "تسجيل بضاعة جديدة" : "Record new products",
+      title: t('stock_mode'),
+      subtitle: t('stock_desc'),
       icon: <PackagePlus size={48} />,
       color: "bg-brand-dark",
-      textColor: "text-white",
-      primary: true
+      textColor: "text-white"
     }
   ];
 
   return (
-    <div className="min-h-screen p-6 font-arabic bg-slate-50 flex flex-col" dir="rtl">
+    <div className={`min-h-screen p-6 bg-slate-50 flex flex-col transition-all duration-300`} dir={dir}>
       {/* Top Header */}
       <div className="flex justify-between items-center mb-10 mt-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">أهلاً يا محمد 👋</h2>
-          <p className="text-gray-500">متجر البقالة الذكي</p>
+          <h2 className="text-2xl font-bold text-gray-800">{t('greeting')}</h2>
+          <p className="text-gray-500">{t('app_subtitle')}</p>
         </div>
         <button 
           onClick={onLogout}
@@ -85,11 +83,11 @@ const Dashboard = ({ onLogout }) => {
       <div className="grid grid-cols-2 gap-4 mt-8 pb-4">
         <button className="bg-white p-6 rounded-3xl flex flex-col items-center gap-2 border border-gray-100 shadow-sm active:scale-95 transition-all">
           <History className="text-gray-400" />
-          <span className="font-bold text-gray-600">الفواتير</span>
+          <span className="font-bold text-gray-600">{t('invoices')}</span>
         </button>
         <button className="bg-white p-6 rounded-3xl flex flex-col items-center gap-2 border border-gray-100 shadow-sm active:scale-95 transition-all">
           <Settings className="text-gray-400" />
-          <span className="font-bold text-gray-600">الإعدادات</span>
+          <span className="font-bold text-gray-600">{t('settings')}</span>
         </button>
       </div>
 
@@ -100,12 +98,12 @@ const Dashboard = ({ onLogout }) => {
             onClose={() => setShowCamera(false)}
             onCapture={async (blob) => {
               try {
-                const command = activeMode === 'stock' ? 'إضافة للمخزن' : 'عملية بيع';
+                const command = activeMode === 'stock' ? t('stock_mode') : t('sale_mode');
                 const result = await visionService.extractProducts(blob, command);
                 setAiResult(result);
                 setShowCamera(false);
               } catch (err) {
-                alert("خطأ في الاتصال بالذكاء الاصطناعي");
+                alert(t('ai_error'));
                 setShowCamera(false);
               }
             }} 
@@ -125,7 +123,7 @@ const Dashboard = ({ onLogout }) => {
                   mode: 'add'
                 })));
                 setAiResult(null);
-                alert("تم تحديث المخزن بنجاح");
+                alert(t('stock_success'));
               } else {
                 setShowInvoice(true);
               }
@@ -150,31 +148,32 @@ const Dashboard = ({ onLogout }) => {
 /* --- Sub-Components --- */
 
 const ReviewScreen = ({ data, mode, onCancel, onConfirm }) => {
+  const { t, formatPrice, dir } = useLanguage();
   return (
     <motion.div 
-      initial={{ y: '100%' }}
+      initial={{ y: '100vw' }} // Responsive exit/entry
       animate={{ y: 0 }}
-      exit={{ y: '100%' }}
-      className="fixed inset-0 z-40 bg-brand-light flex flex-col font-arabic"
-      dir="rtl"
+      exit={{ y: '100vw' }}
+      className={`fixed inset-0 z-40 bg-brand-light flex flex-col transition-all duration-300`}
+      dir={dir}
     >
       <div className="p-6 border-b bg-white flex justify-between items-center">
-        <h2 className="text-2xl font-bold">مراجعة البيانات</h2>
-        <button onClick={onCancel} className="text-gray-400">إلغاء</button>
+        <h2 className="text-2xl font-bold">{t('review_title')}</h2>
+        <button onClick={onCancel} className="text-gray-400">{t('cancel')}</button>
       </div>
 
       <div className="p-6 flex-1 overflow-y-auto">
         <div className="flex items-center gap-3 p-4 bg-brand-primary/10 rounded-2xl mb-6">
           <Check className="text-brand-primary" />
-          <p className="font-medium text-lg">تحليلك جاهز يا محمد. هل البيانات صحيحة؟</p>
+          <p className="font-medium text-lg">{t('ai_status')}</p>
         </div>
 
         <div className="space-y-4">
           {data.products.map((item, i) => (
             <div key={i} className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex justify-between items-center">
               <div>
-                <h4 className="text-xl font-bold">{item.name_ar || item.name}</h4>
-                <p className="text-gray-500">سعر الوحدة: {item.ai_unit_price} ج.م</p>
+                <h4 className="text-xl font-bold">{t('isArabic') ? (item.name_ar || item.name) : (item.name_en || item.name)}</h4>
+                <p className="text-gray-500">{t('unit_price')}: {formatPrice(item.ai_unit_price)}</p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="bg-gray-100 px-4 py-2 rounded-xl text-xl font-bold">
@@ -188,16 +187,16 @@ const ReviewScreen = ({ data, mode, onCancel, onConfirm }) => {
 
       <div className="p-6 space-y-4 bg-white shadow-2xl rounded-t-[40px]">
         <div className="flex justify-between items-center px-4 mb-2">
-           <span className="text-xl text-gray-500">الإجمالي:</span>
+           <span className="text-xl text-gray-500 uppercase tracking-wider">{t('total')}:</span>
            <span className="text-3xl font-black text-brand-dark">
-             {data.products.reduce((acc, p) => acc + (p.ai_quantity * p.ai_unit_price), 0)} ج.م
+             {formatPrice(data.products.reduce((acc, p) => acc + (p.ai_quantity * p.ai_unit_price), 0))}
            </span>
         </div>
         <button 
           onClick={() => onConfirm(data)}
           className="btn-primary w-full py-6 text-2xl"
         >
-          {mode === 'stock' ? 'تأكيد إضافة المخزن' : 'إتمام عملية البيع'}
+          {mode === 'stock' ? t('confirm_stock') : t('confirm_sale')}
         </button>
       </div>
     </motion.div>
@@ -205,29 +204,31 @@ const ReviewScreen = ({ data, mode, onCancel, onConfirm }) => {
 };
 
 const InvoiceOverlay = ({ data, onClose }) => {
-  const invoiceUrl = `https://wa.me/?text=فاتورة بقالة:%0A${data.products.map(p => `${p.name_ar} x ${p.ai_quantity}`).join('%0A')}`;
+  const { t, dir } = useLanguage();
+  const invoiceUrl = `https://wa.me/?text=Invoice:%0A${data.products.map(p => `${p.name} x ${p.ai_quantity}`).join('%0A')}`;
   
   return (
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-50 bg-brand-dark flex items-center justify-center p-6"
+      className={`fixed inset-0 z-50 bg-brand-dark/95 backdrop-blur-sm flex items-center justify-center p-6`}
+      dir={dir}
     >
-      <div className="bg-white w-full max-w-sm rounded-[40px] p-8 text-center relative">
-        <button onClick={onClose} className="absolute top-6 left-6 text-gray-300"><X /></button>
+      <div className="bg-white w-full max-w-sm rounded-[40px] p-8 text-center relative shadow-2xl">
+        <button onClick={onClose} className="absolute top-6 left-6 text-gray-300 active:scale-95 transition-transform"><X /></button>
         
         <div className="bg-brand-primary/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
           <Check className="text-brand-primary" size={40} />
         </div>
         
-        <h2 className="text-3xl font-black mb-4">تم البيع بنجاح!</h2>
-        <p className="text-gray-500 mb-8">اجعل الزبون يمسح الكود للحصول على الفاتورة عبر واتساب</p>
+        <h2 className="text-3xl font-black mb-4">{t('success_title')}</h2>
+        <p className="text-gray-500 mb-8 leading-relaxed px-4">{t('success_desc')}</p>
         
         <div className="bg-slate-50 p-6 rounded-[32px] mb-8 inline-block border-2 border-brand-primary/10">
           <QRCodeSVG value={invoiceUrl} size={200} />
         </div>
         
-        <button onClick={onClose} className="btn-secondary w-full">إغلاق القائمة</button>
+        <button onClick={onClose} className="btn-secondary w-full py-5 text-xl">{t('close_menu')}</button>
       </div>
     </motion.div>
   );
