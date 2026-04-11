@@ -46,10 +46,9 @@
         "path": "frontend"
       },
       "build": {
-        "builder": "NIXPACKS",
-        "buildCommand": "npm install && npm run build"
+        "builder": "DOCKERFILE",
+        "dockerfilePath": "Dockerfile"
       },
-      "startCommand": "npx serve -s dist -l 3000",
       "env": {
         "VITE_API_URL": "https://{{ .laravel-backend.RAILWAY_PUBLIC_DOMAIN }}/api"
       }
