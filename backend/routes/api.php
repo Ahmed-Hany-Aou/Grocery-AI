@@ -34,5 +34,21 @@ Route::prefix('v1')->group(function () {
     
 });
 
-// Health check
-Route::get('/health', fn () => response()->json(['status' => 'ok', 'version' => '1.0.0']));
+// Health check with DB verification
+Route::get('/health', function () {
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        return response()->json([
+            'status' => 'ok',
+            'database' => 'connected',
+            'version' => '1.0.0',
+            'timestamp' => now()->toIso8601String()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'database' => 'disconnected',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
