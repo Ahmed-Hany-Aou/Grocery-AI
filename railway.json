@@ -32,7 +32,7 @@
       },
       "build": {
         "builder": "NIXPACKS",
-        "buildCommand": "pip install -r requirements.txt && npx playwright install chromium"
+        "buildCommand": "pip install -r requirements.txt && npx playwright install --with-deps chromium"
       },
       "env": {
         "API_SECRET_KEY": "{{ .API_SECRET_KEY }}",
@@ -51,7 +51,7 @@
       },
       "startCommand": "npx serve -s dist -l 3000",
       "env": {
-        "VITE_API_URL": "https://{{ .laravel-backend.RAILWAY_PUBLIC_DOMAIN }}/api"
+        "VITE_API_URL": "https://{{ .laravel-backend.RAILWAY_PUBLIC_DOMAIN }}/api/v1"
       }
     },
     {
