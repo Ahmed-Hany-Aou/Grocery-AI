@@ -2,15 +2,26 @@ import axios from 'axios';
 
 // Fallback logic for Railway production: if VITE_API_URL is missing, we check if we're on a railway domain
 const getBaseUrl = () => {
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-  
-  // If we are on production but the env var was missed during build, 
-  // we try to infer it or at least log the failure more clearly.
-  if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
-    console.warn('VITE_API_URL not found, using inferred production path');
-    // We expect the backend to be on the same project, but different domain.
-    // For now, we MUST rely on the build-time variable.
+  // 1. High-priority Build-time Variable
+  if (import.meta.env.VITE_API_URL) {
+    console.debug('API: Using built-in VITE_API_URL:', import.meta.env.VITE_API_URL);
+    return import.meta.env.VITE_API_URL;
   }
+  
+  // 2. Performance-time Discovery fallback
+  const isProd = typeof window !== 'undefined' && window.location.hostname.includes('railway.app');
+  
+  if (isProd) {
+    console.warn('CRITICAL: VITE_API_URL is missing in PRODUCTION!');
+    console.info('Ensure "Generate Domain" is active for laravel-backend in Railway.');
+    // We do NOT fall back to localhost in production to avoid confusing errors.
+    // Instead, we return an empty string which will cause axios to use current domain, 
+    // which might work if there's a proxy, or fail with a clearer 404.
+    return '/api/v1'; 
+  }
+
+  // 3. Local Development Fallback
+  console.debug('API: Using local development fallback: http://localhost:8080/api/v1');
   return 'http://localhost:8080/api/v1';
 };
 

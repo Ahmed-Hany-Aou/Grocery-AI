@@ -10,7 +10,7 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "bash -c 'export PATH=\"/app/node-bin/bin:$PATH\" && npm run build'"
+  "bash -c 'export PATH=\"/app/node-bin/bin:$PATH\" && echo \"Building with VITE_API_URL: $VITE_API_URL\" && npm run build'"
 ]
 
 [start]
