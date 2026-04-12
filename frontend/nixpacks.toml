@@ -1,16 +1,17 @@
 [phases.setup]
-nixPkgs = ["curl", "bash", "unzip"]
+nixPkgs = ["curl", "tar", "gzip"]
 
 [phases.install]
 cmds = [
-  "curl -fsSL https://fnm.vercel.app/install | bash",
-  "bash -c 'export PATH=\"$HOME/.fnm:$PATH\" && fnm install 22.12.0 && fnm use 22.12.0 && rm -rf node_modules package-lock.json && npm install'"
+  "mkdir -p /app/node-bin",
+  "curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.gz | tar -xz --strip-components=1 -C /app/node-bin",
+  "bash -c 'export PATH=\"/app/node-bin/bin:$PATH\" && node -v && npm install'"
 ]
 
 [phases.build]
 cmds = [
-  "bash -c 'export PATH=\"$HOME/.fnm:$PATH\" && fnm use 22.12.0 && npm run build'"
+  "bash -c 'export PATH=\"/app/node-bin/bin:$PATH\" && npm run build'"
 ]
 
 [start]
-cmd = "bash -c 'export PATH=\"$HOME/.fnm:$PATH\" && fnm use 22.12.0 && npx serve -s dist -l 3000'"
+cmd = "bash -c 'export PATH=\"/app/node-bin/bin:$PATH\" && npx serve -s dist -l 3000'"
