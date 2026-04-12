@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["curl", "tar", "gzip"]
+nixPkgs = ["curl", "gnutar", "gzip"]
 
 [phases.install]
 cmds = [
