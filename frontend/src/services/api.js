@@ -2,6 +2,15 @@ import axios from 'axios';
 
 // Fallback logic for Railway production: if VITE_API_URL is missing, we check if we're on a railway domain
 const getBaseUrl = () => {
+  // 0. Runtime Override (Fail-safe for Production)
+  if (typeof window !== 'undefined') {
+    const override = localStorage.getItem('GROCERY_AI_BACKEND_URL');
+    if (override) {
+      console.debug('API: Using localStorage override:', override);
+      return override;
+    }
+  }
+
   // 1. High-priority Build-time Variable
   if (import.meta.env.VITE_API_URL) {
     console.debug('API: Using built-in VITE_API_URL:', import.meta.env.VITE_API_URL);

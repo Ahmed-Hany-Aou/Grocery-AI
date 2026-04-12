@@ -93,6 +93,10 @@ const Dashboard = ({ onLogout }) => {
 
       {/* Overlays */}
       <AnimatePresence>
+        {(!aiResult && typeof window !== 'undefined' && !localStorage.getItem('GROCERY_AI_BACKEND_URL') && !import.meta.env.VITE_API_URL && window.location.hostname.includes('railway.app')) && (
+          <SetupModal />
+        )}
+
         {showCamera && (
           <CameraOverlay 
             onClose={() => setShowCamera(false)}
@@ -229,6 +233,53 @@ const InvoiceOverlay = ({ data, onClose }) => {
         </div>
         
         <button onClick={onClose} className="btn-secondary w-full py-5 text-xl">{t('close_menu')}</button>
+      </div>
+    </motion.div>
+  );
+};
+
+const SetupModal = () => {
+  const { t, dir } = useLanguage();
+  const [url, setUrl] = useState('');
+  
+  const handleSave = () => {
+    if (url.trim()) {
+      localStorage.setItem('GROCERY_AI_BACKEND_URL', url.trim());
+      window.location.reload();
+    }
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="fixed inset-0 z-[60] bg-brand-dark/95 backdrop-blur-md flex items-center justify-center p-6"
+      dir={dir}
+    >
+      <div className="bg-white w-full max-w-md rounded-[40px] p-10 text-center shadow-2xl border-4 border-brand-primary">
+        <div className="bg-yellow-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <ShieldAlert className="text-yellow-600" size={40} />
+        </div>
+        
+        <h2 className="text-3xl font-black mb-4">🚀 توصيل العقل الذكي</h2>
+        <p className="text-gray-500 mb-8 leading-relaxed">
+          يا محمد، نحتاج لتوصيل الكاميرا بالعقل المدبر. يرجى إدخال رابط الـ Backend الخاص بك مرة واحدة فقط.
+        </p>
+        
+        <input 
+          type="text" 
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://glistening-caring-production.up.railway.app/api/v1"
+          className="w-full p-5 bg-gray-50 border-2 border-gray-100 rounded-3xl mb-8 focus:border-brand-primary outline-none text-center font-mono text-sm"
+        />
+        
+        <button 
+          onClick={handleSave}
+          className="btn-primary w-full py-5 text-xl"
+        >
+          تفعيل الذكاء الاصطناعي
+        </button>
       </div>
     </motion.div>
   );

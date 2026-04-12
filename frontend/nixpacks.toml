@@ -10,7 +10,7 @@ cmds = [
 
 [phases.build]
 cmds = [
-  "bash -c 'export PATH=\"/app/node-bin/bin:$PATH\" && echo \"Building with VITE_API_URL: $VITE_API_URL\" && npm run build'"
+  "bash -c 'export PATH=\"/app/node-bin/bin:$PATH\" && [ -z \"$VITE_API_URL\" ] && (echo \"ERROR: VITE_API_URL is missing! Verify Railway env vars.\" && exit 1) || npm run build'"
 ]
 
 [start]
