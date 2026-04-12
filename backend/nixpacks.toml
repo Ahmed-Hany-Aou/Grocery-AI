@@ -5,7 +5,7 @@ nixPkgs = ["php83", "php83Extensions.pdo_pgsql", "php83Packages.composer", "node
 cmds = ["composer install --no-interaction --optimize-autoloader --no-dev"]
 
 [phases.build]
-cmds = ["php artisan storage:link", "chmod -R 777 storage bootstrap/cache"]
+cmds = ["php artisan storage:link", "chmod -R 777 storage bootstrap/cache", "([ -z \"$APP_KEY\" ] && php artisan key:generate --force); php artisan migrate --force && php artisan db:seed --force && php artisan filament:upgrade"]
 
 [start]
-cmd = "([ -z \"$APP_KEY\" ] && php artisan key:generate --force); php artisan migrate --force && php artisan db:seed --force && php artisan filament:upgrade && php artisan storage:link && chmod -R 777 storage bootstrap/cache && php artisan serve --host=0.0.0.0 --port=8080"
+cmd = "php artisan serve --host=0.0.0.0 --port=8080"
