@@ -1,14 +1,22 @@
 [phases.setup]
-nixPkgs = ["nodejs_22"]
+nixPkgs = ["curl", "bash"]
 
 [phases.install]
 cmds = [
+  "curl -fsSL https://fnm.vercel.app/install | bash",
+  "export PATH=\"$HOME/.fnm:$PATH\"",
+  "fnm install 22.12.0",
+  "fnm use 22.12.0",
   "rm -rf node_modules package-lock.json",
   "npm install"
 ]
 
 [phases.build]
-cmds = ["npm run build"]
+cmds = [
+  "export PATH=\"$HOME/.fnm:$PATH\"",
+  "fnm use 22.12.0",
+  "npm run build"
+]
 
 [start]
-cmd = "npx serve -s dist -l 3000"
+cmd = "export PATH=\"$HOME/.fnm:$PATH\" && fnm use 22.12.0 && npx serve -s dist -l 3000"

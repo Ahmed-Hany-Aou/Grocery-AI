@@ -8,6 +8,10 @@ Dockerfile
 docker-entrypoint.sh
 railpack.toml
 
+# Ignore monorepo auto-detection
+package.json
+package-lock.json
+
 # Ignore build artifacts
 node_modules
 dist
