@@ -34,6 +34,9 @@ Route::prefix('v1')->group(function () {
     
 });
 
+// Fast health check for Railway
+Route::get('/status', fn () => response('OK', 200));
+
 // Health check with DB verification
 Route::get('/health', function () {
     try {
