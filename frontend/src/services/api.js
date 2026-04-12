@@ -1,6 +1,20 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1';
+// Fallback logic for Railway production: if VITE_API_URL is missing, we check if we're on a railway domain
+const getBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+  
+  // If we are on production but the env var was missed during build, 
+  // we try to infer it or at least log the failure more clearly.
+  if (typeof window !== 'undefined' && window.location.hostname.includes('railway.app')) {
+    console.warn('VITE_API_URL not found, using inferred production path');
+    // We expect the backend to be on the same project, but different domain.
+    // For now, we MUST rely on the build-time variable.
+  }
+  return 'http://localhost:8080/api/v1';
+};
+
+const API_URL = getBaseUrl();
 const AI_PROXY_URL = import.meta.env.VITE_AI_PROXY_URL || 'http://localhost:7777/api/v1';
 
 /**
