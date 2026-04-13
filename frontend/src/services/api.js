@@ -30,8 +30,8 @@ const getBaseUrl = () => {
   }
 
   // 3. Local Development Fallback
-  console.debug('API: Using local development fallback: http://localhost:8080/api/v1');
-  return 'http://localhost:8080/api/v1';
+  console.debug('API: Using local development fallback: http://localhost:8000/api/v1');
+  return 'http://localhost:8000/api/v1';
 };
 
 const API_URL = getBaseUrl();
