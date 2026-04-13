@@ -140,6 +140,7 @@ class ProductController extends Controller
             'success' => true,
             'data' => new ProductResource($product->load('category'))
         ]);
+    }
     /**
      * Bulk update stock quantity.
      * POST /api/v1/products/bulk-stock
