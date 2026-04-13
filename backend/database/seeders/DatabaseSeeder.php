@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
     {
-            public function run(): void
+            /**
+     * Seed the application's database.
+         */
+    public function run(): void
         {
                     User::updateOrCreate(
                                     ['email' => 'ahmed.hany.boshra@gmail.com'],
@@ -22,7 +25,8 @@ class DatabaseSeeder extends Seeder
                                 );
 
                 $fruits = Category::updateOrCreate(['slug' => 'fruits'], ['name' => 'Fruits', 'icon' => 'fruit-icon']);
-                    $vegetables = Category::updateOrCreate(['slug' => 'vegetables'], ['name' => 'Vegetables', 'icon' => 'veg-icon']);
+                    $vegetables = Category::updateOrCreate(['slug' => 'vegetables'], ['name' => 'Vegetables', 'icon' => 'veg-icon'])
+                        ;
 
                 Product::updateOrCreate(['slug' => 'apple'], [
                                                     'name' => 'Red Apple',
