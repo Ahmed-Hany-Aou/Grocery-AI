@@ -10,10 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
     {
-            /**
-     * Seed the application's database.
-         */
-    public function run(): void
+            public function run(): void
         {
                     User::updateOrCreate(
                                     ['email' => 'ahmed.hany.boshra@gmail.com'],
@@ -23,28 +20,26 @@ class DatabaseSeeder extends Seeder
                                     ]
                                 );
 
-                $fruits = Category::updateOrCreate(['slug' => 'fruits'], ['name' => 'Fruits', 'icon' => 'fruit-icon']);
-                    $vegetables = Category::updateOrCreate(['slug' => 'vegetables'], ['name' => 'Vegetables', 'icon' => 'veg-icon']);
+                $fruits = Category::updateOrCreate(['name' => 'Fruits'], ['name_ar' => 'Fruits_AR']);
+                    $vegetables = Category::updateOrCreate(['name' => 'Vegetables'], ['name_ar' => 'Vegetables_AR']);
 
-                Product::updateOrCreate(['slug' => 'apple'], [
-                                                    'name' => 'Red Apple',
+                Product::updateOrCreate(['name' => 'Red Apple'], [
+                                                    'name_ar' => 'Red Apple AR',
                                                     'price' => 1.99,
                                                     'description' => 'Fresh red apple',
                                                     'stock_quantity' => 100,
                                                     'category_id' => $fruits->id,
-                                                    'barcode' => '123456789',
-                                                    'sku' => 'FRT-APL-001'
+                                                    'barcode' => '123456789'
                                                 ]);
 
-                Product::updateOrCreate(['slug' => 'carrot'], [
-                                                    'name' => 'Organic Carrot',
+                Product::updateOrCreate(['name' => 'Organic Carrot'], [
+                                                    'name_ar' => 'Organic Carrot AR',
                                                     'price' => 0.99,
                                                     'description' => 'Fresh organic carrot',
                                                     'stock_quantity' => 200,
                                                     'category_id' => $vegetables->id,
-                                                    'barcode' => '987654321',
-                                                    'sku' => 'VEG-CRT-001'
+                                                    'barcode' => '987654321'
                                                 ]);
         }
     }
-
+                                       
